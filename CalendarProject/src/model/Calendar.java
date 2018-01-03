@@ -55,14 +55,62 @@ public class Calendar {
         return todaysEntries;
     }
 
-    // EFFECTS: Returns the entry with a date closest to the current date
-    public Entry getMostRecentEntry(){
-        return  null;
+    // REQUIRES: there are entries in the calendar
+    // EFFECTS: Returns entries with a dates within range days to the current date
+    public ArrayList<Entry> getMostRecentEntry(int range){
+        if(entries.size() == 0){
+            return null;
+        }
+        int rangeYear = currentDate.getYear();
+        int rangeMonth = currentDate.getMonth();
+        int rangeDay = currentDate.getDay();
+
+        ArrayList<Entry> withinRange = new ArrayList<Entry>();
+
+        for(int i = 0; i < entries.size(); i++) {
+
+            // check if the year is the same:
+            if( (entries.get(i).getDate().getYear() == rangeYear)  ){
+                // check if adding range will put the current day into the next month:
+                // need to include dates in the following month
+                if( (rangeDay + range) > 30 ){
+                    // assuming 30 days in a month
+                    // find out the number of days in the next month to include:
+                    int leftoverDays = Math.abs(30 - (rangeDay + range));
+                    if( (rangeMonth + 1) == entries.get(i).getDate().getMonth() &&
+                            entries.get(i).getDate().getDay() <= leftoverDays){
+                        withinRange.add(entries.get(i));
+                    }
+                }
+                // check if the date range would put us into the previous month
+                else if( (rangeDay - range) < 0 ){
+                    int leftoverDays = Math.abs(rangeDay - range);
+                    if( (rangeMonth - 1) == entries.get(i).getDate().getMonth() &&
+                            entries.get(i).getDate().getDay() >= (30 - leftoverDays)){
+                        withinRange.add(entries.get(i));
+                    }
+                }
+
+                // if this entry is in the same month and year, we next see if it falls within the date range
+                if ((entries.get(i).getDate().getMonth() == rangeMonth)) {
+                    if( Math.abs(rangeDay - entries.get(i).getDate().getDay()) <= range ){
+                        withinRange.add(entries.get(i));
+                    }
+                }
+            }
+        }
+        return  withinRange;
     }
 
     // EFFECTS: Returns all calendar entries matching the given label
     public ArrayList<Entry> getByLabel(String label){
-        return null;
+        ArrayList<Entry> matchingLabelEntries = new ArrayList<Entry>();
+        for(int i = 0; i < entries.size(); i++){
+            if(entries.get(i).getLabel().equals(label)){
+                matchingLabelEntries.add(entries.get(i));
+            }
+        }
+        return matchingLabelEntries;
     }
 
     // EFFECTS: prints the details of the given list of calendar entries
@@ -89,10 +137,10 @@ public class Calendar {
 
         Time time1 = new Time(23, 01);
         String label1 = "Birthday";
-        Date date2 = new Date(03, 02, 2018);
+        Date date2 = new Date(01, 30, 2018);
         Time time2 = new Time(01, 10);
         String label2 = "Doctor's Appointment";
-        Date date3 = new Date(02, 14, 2018);
+        Date date3 = new Date(02, 01, 2018);
         Time time3 = new Time(14, 25);
         String label3 = "Meeting";
         Date date4 = new Date(01, 02, 2018);
@@ -121,6 +169,9 @@ public class Calendar {
         entry4.setNote("Use the outdoor return slot.");
         c.addEntry(entry4);
 
+        Meeting entry5 = new Meeting(date2, time2, label3);
+        c.addEntry(entry5);
+
         System.out.println("===========================");
         System.out.println("===========================");
         System.out.println("ALL CALENDAR ENTRIES: ");
@@ -131,11 +182,21 @@ public class Calendar {
         System.out.println("TODAY'S ENTRIES: ");
         c.printEntry(c.getEntriesForToday());
 
-        c.setDate(new Date(01, 04, 2018));
+        c.setDate(new Date(02, 01, 2018));
         System.out.println("===========================");
         System.out.println("===========================");
         System.out.println("TODAY'S ENTRIES (01/04/2018):" );
         c.printEntry(c.getEntriesForToday());
+
+        System.out.println("===========================");
+        System.out.println("===========================");
+        System.out.println("ALL MEETING ENTRIES: ");
+        c.printEntry(c.getByLabel("Meeting"));
+
+        System.out.println("===========================");
+        System.out.println("===========================");
+        System.out.println("MOST RECENT ENTRIES: (within 5 days)");
+        c.printEntry(c.getMostRecentEntry(5));
 
     }
 
