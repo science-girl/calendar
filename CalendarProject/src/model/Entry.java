@@ -16,6 +16,8 @@ public abstract class Entry {
         date = d;
         time = t;
         label = l;
+        isRepeated = false;
+        repetitionInterval = 0;
     }
 
     // GETTERS

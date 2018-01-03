@@ -13,11 +13,18 @@ public class Meeting extends Event {
     // Constructor
     public Meeting(Date date, Time time, String label){
         super(date, time, label);
+        attendees = new ArrayList<String>();
+        emails = new ArrayList<String>();
     }
 
     // EFFECTS: returns a list of emails for the meeting attendees
-    public String getEmails(){
-        return emails.toString();
+    public ArrayList<String> getEmails(){
+        return emails; //emails.toString();
+    }
+
+    // EFFECTS: returns an ArrayList of attendees
+    public ArrayList<String> getAttendees(){
+        return attendees;
     }
 
     // REQUIRES: attendee does not already exist on the list

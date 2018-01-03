@@ -10,6 +10,7 @@ public class Reminder extends Entry{
     // Constructor
     public Reminder(Date date, Time time, String label){
         super(date, time, label);
+        note = "";
     }
 
     // Getters
